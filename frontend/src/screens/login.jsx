@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Link,useLocation, useNavigate } from 'react-router-dom';
+import { useUser } from '../context/use-user.js'
 
 const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:3000/api/users').replace(/\/$/, '')
 
 export default function Login() {
     const location = useLocation()
     const navigate = useNavigate()
+    const { login } = useUser()
     const isRegistering = location.pathname === '/register'
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -40,7 +42,7 @@ export default function Login() {
                 throw new Error('The server did not return an authentication token.')
             }
 
-            localStorage.setItem('authToken', result.token)
+            login({ token: result.token, user: result.user })
             navigate('/', { replace: true })
         } catch (requestError) {
             setError(requestError.message || 'Unable to connect. Please try again.')
